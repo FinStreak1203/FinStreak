@@ -1,0 +1,98 @@
+{
+  "project_info": {
+    "project_number": "503765405760",
+    "project_id": "finella-dev",
+    "storage_bucket": "finella-dev.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:503765405760:android:d0572487c297a18b34cfa5",
+        "android_client_info": {
+          "package_name": "com.example.finella"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "503765405760-96i6q893j55b207bl5okvk8h9t5eocs8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.finella",
+            "certificate_hash": "a479f43a4c217003431c53ef61caee4c91e82826"
+          }
+        },
+        {
+          "client_id": "503765405760-sckgpslkpeh6egqso83q5u7u2i77l4he.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCW63gFyQ-kCg44A4ymDajEzr7pfDMuQD4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "503765405760-sckgpslkpeh6egqso83q5u7u2i77l4he.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "503765405760-elgmm4s6s41a3murrr4o709posn1spj0.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.finella"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:503765405760:android:3f069c140166ae4934cfa5",
+        "android_client_info": {
+          "package_name": "com.example.finellaDev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "503765405760-s26l47lg4gpcr5jr0mu72kavg7i4l7b9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.finellaDev",
+            "certificate_hash": "a479f43a4c217003431c53ef61caee4c91e82826"
+          }
+        },
+        {
+          "client_id": "503765405760-sckgpslkpeh6egqso83q5u7u2i77l4he.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCW63gFyQ-kCg44A4ymDajEzr7pfDMuQD4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "503765405760-sckgpslkpeh6egqso83q5u7u2i77l4he.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "503765405760-elgmm4s6s41a3murrr4o709posn1spj0.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.finella"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
