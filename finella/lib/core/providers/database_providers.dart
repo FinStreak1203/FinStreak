@@ -7,6 +7,10 @@ import '../database/account_dao.dart';
 import '../database/budget_dao.dart';
 import '../database/category_dao.dart';
 import '../database/recurring_dao.dart';
+import '../database/learning_dao.dart';
+import '../database/loan_dao.dart';
+import '../database/budget_review_dao.dart';
+import '../database/goal_contribution_dao.dart';
 import '../../features/auth/viewmodel/auth_view_model.dart';
 import 'subscription_provider.dart' show sharedPreferencesProvider;
 
@@ -51,6 +55,31 @@ final categoryDaoProvider = Provider<CategoryDao>(
       ref.watch(firestoreProvider), ref.watch(currentUidProvider)),
 );
 
+final learningContentDaoProvider = Provider<LearningContentDao>(
+  (ref) => LearningContentDao(
+      ref.watch(firestoreProvider), ref.watch(currentUidProvider)),
+);
+
+final learningProgressDaoProvider = Provider<LearningProgressDao>(
+  (ref) => LearningProgressDao(
+      ref.watch(firestoreProvider), ref.watch(currentUidProvider)),
+);
+
+final loanDaoProvider = Provider<LoanDao>(
+  (ref) => LoanDao(
+      ref.watch(firestoreProvider), ref.watch(currentUidProvider)),
+);
+
+final budgetReviewDaoProvider = Provider<BudgetReviewDao>(
+  (ref) => BudgetReviewDao(
+      ref.watch(firestoreProvider), ref.watch(currentUidProvider)),
+);
+
+final goalContributionDaoProvider = Provider<GoalContributionDao>(
+  (ref) => GoalContributionDao(
+      ref.watch(firestoreProvider), ref.watch(currentUidProvider)),
+);
+
 // ── Reactive collections ──────────────────────────────────────
 final allTransactionsProvider = StreamProvider<List<Transaction>>(
   (ref) => ref.watch(transactionDaoProvider).watchAllTransactions(),
@@ -85,3 +114,28 @@ final userSeedProvider = FutureProvider<void>((ref) async {
   final prefs = ref.read(sharedPreferencesProvider);
   await ref.read(accountDaoProvider).ensureSeeded(prefs);
 });
+
+/// Learning content stream
+final learningContentProvider = StreamProvider<List<LearningContent>>(
+  (ref) => ref.watch(learningContentDaoProvider).watchAll(),
+);
+
+/// Learning progress stream
+final learningProgressProvider = StreamProvider<List<LearningProgressesData>>(
+  (ref) => ref.watch(learningProgressDaoProvider).watchAll(),
+);
+
+/// Loans stream
+final allLoansProvider = StreamProvider<List<Loan>>(
+  (ref) => ref.watch(loanDaoProvider).watchAll(),
+);
+
+/// Budget reviews stream
+final allBudgetReviewsProvider = StreamProvider<List<BudgetReview>>(
+  (ref) => ref.watch(budgetReviewDaoProvider).watchAll(),
+);
+
+/// Goal contributions stream
+final allGoalContributionsProvider = StreamProvider<List<GoalContribution>>(
+  (ref) => ref.watch(goalContributionDaoProvider).watchAll(),
+);

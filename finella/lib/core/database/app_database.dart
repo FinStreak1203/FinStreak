@@ -79,14 +79,104 @@ class Budgets extends Table {
       dateTime().withDefault(currentDateAndTime)();
 }
 
+class LearningContents extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get title => text()();
+  TextColumn get type => text()(); // article, video, quiz, course
+  TextColumn get category => text()(); // budgeting, investing, debt, etc.
+  TextColumn get contentUrl => text().nullable()();
+  IntColumn get xpReward => integer().withDefault(const Constant(10))();
+  IntColumn get durationMinutes => integer().nullable()();
+  DateTimeColumn get createdAt =>
+      dateTime().withDefault(currentDateAndTime)();
+}
+
+class LearningProgresses extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get contentId => integer()();
+  TextColumn get contentTitle => text()();
+  TextColumn get contentType => text()();
+  TextColumn get contentCategory => text()();
+  BoolColumn get completed => boolean().withDefault(const Constant(false))();
+  RealColumn get score => real().nullable()(); // for quizzes
+  DateTimeColumn get completedAt => dateTime().nullable()();
+  DateTimeColumn get startedAt =>
+      dateTime().withDefault(currentDateAndTime)();
+}
+
+class BudgetReviews extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get budgetId => integer()();
+  TextColumn get categoryId => text()();
+  TextColumn get categoryName => text()();
+  IntColumn get year => integer()();
+  IntColumn get month => integer()();
+  RealColumn get plannedAmount => real()();
+  RealColumn get actualSpent => real()();
+  TextColumn get notes => text().nullable()();
+  DateTimeColumn get reviewedAt =>
+      dateTime().withDefault(currentDateAndTime)();
+}
+
+class Loans extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get name => text()();
+  TextColumn get type => text()(); // home, personal, car, education, credit_card
+  RealColumn get principalAmount => real()();
+  RealColumn get outstandingAmount => real()();
+  RealColumn get emiAmount => real()();
+  RealColumn get interestRate => real()();
+  IntColumn get tenureMonths => integer()();
+  IntColumn get remainingMonths => integer()();
+  DateTimeColumn get startDate => dateTime()();
+  DateTimeColumn get nextDueDate => dateTime()();
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
+  DateTimeColumn get monthlyReconciledAt => dateTime().nullable()();
+  DateTimeColumn get createdAt =>
+      dateTime().withDefault(currentDateAndTime)();
+}
+
+class EmiPayments extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get loanId => integer()();
+  RealColumn get amountPaid => real()();
+  DateTimeColumn get dueDate => dateTime()();
+  DateTimeColumn get paidDate => dateTime().nullable()();
+  BoolColumn get isPaid => boolean().withDefault(const Constant(false))();
+  BoolColumn get isOnTime => boolean().nullable()();
+  DateTimeColumn get createdAt =>
+      dateTime().withDefault(currentDateAndTime)();
+}
+
+class GoalContributions extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get goalId => integer()();
+  RealColumn get amount => real()();
+  DateTimeColumn get contributedAt =>
+      dateTime().withDefault(currentDateAndTime)();
+  BoolColumn get isRecurring => boolean().withDefault(const Constant(false))();
+  TextColumn get frequency => text().nullable()(); // weekly, monthly, quarterly
+}
+
 // ── Database ──────────────────────────────────────────────
 
-@DriftDatabase(tables: [Transactions, Goals, Accounts, Budgets])
+@DriftDatabase(tables: [
+  Transactions,
+  Goals,
+  Accounts,
+  Budgets,
+  LearningContents,
+  LearningProgresses,
+  BudgetReviews,
+  Loans,
+  EmiPayments,
+  GoalContributions,
+])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 12;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -119,6 +209,25 @@ class AppDatabase extends _$AppDatabase {
           }
           if (from < 9) {
             await m.addColumn(transactions, transactions.currency);
+          }
+          if (from < 10) {
+            await m.createTable(loans);
+            await m.createTable(emiPayments);
+            await m.createTable(budgetReviews);
+            await m.createTable(goalContributions);
+            await m.createTable(learningContents);
+            await m.createTable(learningProgresses);
+          }
+          if (from < 11) {
+            await m.createTable(learningContents);
+            await m.createTable(learningProgresses);
+            await m.createTable(budgetReviews);
+            await m.createTable(loans);
+            await m.createTable(emiPayments);
+            await m.createTable(goalContributions);
+          }
+          if (from < 12) {
+            await m.addColumn(loans, loans.monthlyReconciledAt);
           }
         },
       );

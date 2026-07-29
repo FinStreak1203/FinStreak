@@ -18,4 +18,7 @@ class RouteNames {
   static const String reconcile         = '/reconcile';
   static const String reconcileSuccess  = '/reconcile/success';
   static const String reconcileMismatch = '/reconcile/mismatch';
+  static const String loans          = '/loans';
+  static const String loanDetail     = '/loans/detail';
+  static const String loanReconcile  = '/loans/reconcile';
 }

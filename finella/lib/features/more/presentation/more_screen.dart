@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/router/route_names.dart';
-import '../../home/providers/home_provider.dart';
+import '../../finsco/providers/finsco_provider.dart';
 import '../../auth/viewmodel/auth_view_model.dart';
 
 /// "More" hub — grid layout. Gathers secondary destinations into a 3×3 grid.
@@ -28,18 +28,24 @@ class MoreScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('More',
-                        style: TextStyle(
-                            fontFamily: 'OpenSans',
-                            fontSize: 26,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: -0.8,
-                            color: Color(0xFF1A3A1A))),
-                    Text('Everything you need. All in one place.',
-                        style: TextStyle(
-                            fontFamily: 'OpenSans',
-                            fontSize: 12,
-                            color: Color(0xFF999999))),
+                    Text(
+                      'More',
+                      style: TextStyle(
+                        fontFamily: 'OpenSans',
+                        fontSize: 26,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.8,
+                        color: Color(0xFF1A3A1A),
+                      ),
+                    ),
+                    Text(
+                      'Everything you need. All in one place.',
+                      style: TextStyle(
+                        fontFamily: 'OpenSans',
+                        fontSize: 12,
+                        color: Color(0xFF999999),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -48,13 +54,16 @@ class MoreScreen extends ConsumerWidget {
 
               const Padding(
                 padding: EdgeInsets.fromLTRB(18, 0, 18, 8),
-                child: Text('MANAGE',
-                    style: TextStyle(
-                        fontFamily: 'OpenSans',
-                        fontSize: 10,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 1.2,
-                        color: Color(0xFFAAAAAA))),
+                child: Text(
+                  'MANAGE',
+                  style: TextStyle(
+                    fontFamily: 'OpenSans',
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 1.2,
+                    color: Color(0xFFAAAAAA),
+                  ),
+                ),
               ),
 
               _buildGrid(context),
@@ -70,14 +79,14 @@ class MoreScreen extends ConsumerWidget {
   // ── Profile card ──────────────────────────────────────────────
   Widget _buildProfileCard(BuildContext context, WidgetRef ref) {
     final profile = ref.watch(userProfileProvider).valueOrNull;
-    final score = ref.watch(homeProvider).aiScore;
+    final score = ref.watch(finScoreValueProvider);
     final name = (profile?.fullName.trim().isNotEmpty ?? false)
         ? profile!.fullName
         : 'Finella User';
     final initial = name.isNotEmpty ? name[0].toUpperCase() : 'F';
     final memberSince =
         FirebaseAuth.instance.currentUser?.metadata.creationTime?.year ??
-            DateTime.now().year;
+        DateTime.now().year;
 
     return GestureDetector(
       onTap: () => context.push(RouteNames.profile),
@@ -96,86 +105,107 @@ class MoreScreen extends ConsumerWidget {
           ],
         ),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        child: Row(children: [
-          // Avatar with green badge
-          Stack(children: [
-            Container(
-              width: 52,
-              height: 52,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0xFF4CAF50), Color(0xFF2E7D32)],
-                ),
-              ),
-              child: Center(
-                child: Text(initial,
-                    style: const TextStyle(
+        child: Row(
+          children: [
+            // Avatar with green badge
+            Stack(
+              children: [
+                Container(
+                  width: 52,
+                  height: 52,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Color(0xFF4CAF50), Color(0xFF2E7D32)],
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      initial,
+                      style: const TextStyle(
                         fontFamily: 'OpenSans',
                         fontSize: 20,
                         fontWeight: FontWeight.w800,
-                        color: Colors.white)),
-              ),
-            ),
-            Positioned(
-              bottom: 0,
-              right: 0,
-              child: Container(
-                width: 16,
-                height: 16,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF4CAF50),
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 2),
-                ),
-                child: const Icon(Icons.check, size: 8, color: Colors.white),
-              ),
-            ),
-          ]),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(name,
-                    style: const TextStyle(
-                        fontFamily: 'OpenSans',
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: -0.3,
-                        color: Color(0xFF111111))),
-                const SizedBox(height: 2),
-                RichText(
-                  text: TextSpan(
-                    style: const TextStyle(
-                        fontFamily: 'OpenSans',
-                        fontSize: 12,
-                        color: Color(0xFF555555)),
-                    children: [
-                      const TextSpan(text: 'Financial Score: '),
-                      TextSpan(
-                        text: '$score',
-                        style: const TextStyle(
-                            color: Color(0xFF2E7D32),
-                            fontWeight: FontWeight.w700),
+                        color: Colors.white,
                       ),
-                    ],
+                    ),
                   ),
                 ),
-                const SizedBox(height: 1),
-                Text('Member since $memberSince',
-                    style: const TextStyle(
-                        fontFamily: 'OpenSans',
-                        fontSize: 11,
-                        color: Color(0xFFAAAAAA))),
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: Container(
+                    width: 16,
+                    height: 16,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF4CAF50),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 2),
+                    ),
+                    child: const Icon(
+                      Icons.check,
+                      size: 8,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
               ],
             ),
-          ),
-          const Text('›',
-              style: TextStyle(fontSize: 18, color: Color(0xFFCCCCCC))),
-        ]),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: const TextStyle(
+                      fontFamily: 'OpenSans',
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.3,
+                      color: Color(0xFF111111),
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  RichText(
+                    text: TextSpan(
+                      style: const TextStyle(
+                        fontFamily: 'OpenSans',
+                        fontSize: 12,
+                        color: Color(0xFF555555),
+                      ),
+                      children: [
+                        const TextSpan(text: 'Financial Score: '),
+                        TextSpan(
+                          text: '$score',
+                          style: const TextStyle(
+                            color: Color(0xFF2E7D32),
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 1),
+                  Text(
+                    'Member since $memberSince',
+                    style: const TextStyle(
+                      fontFamily: 'OpenSans',
+                      fontSize: 11,
+                      color: Color(0xFFAAAAAA),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Text(
+              '›',
+              style: TextStyle(fontSize: 18, color: Color(0xFFCCCCCC)),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -183,9 +213,9 @@ class MoreScreen extends ConsumerWidget {
   // ── 3×3 grid ──────────────────────────────────────────────────
   Widget _buildGrid(BuildContext context) {
     void open(String route) => context.push(route);
-    void soon(String title) => Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => _PlaceholderScreen(title: title)),
-        );
+    void soon(String title) => Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => _PlaceholderScreen(title: title)));
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
@@ -199,22 +229,48 @@ class MoreScreen extends ConsumerWidget {
         children: [
           _gridItem('Reports', Icons.show_chart, () => soon('Reports')),
           _gridItem('Split', Icons.swap_horiz, () => soon('Split')),
-          _gridItem('Settings', Icons.settings_outlined,
-              () => open(RouteNames.settings)),
-          _gridItem('Tax Returns', Icons.description_outlined,
-              () => soon('Tax Returns')),
+          _gridItem(
+            'Settings',
+            Icons.settings_outlined,
+            () => open(RouteNames.settings),
+          ),
+          _gridItem(
+            'Tax Returns',
+            Icons.description_outlined,
+            () => soon('Tax Returns'),
+          ),
           // Money Saving → existing Budgets screen
-          _gridItem('Money Saving', Icons.savings_outlined,
-              () => open(RouteNames.budgets)),
-          _gridItem('Documents', Icons.folder_outlined,
-              () => soon('Documents')),
+          _gridItem(
+            'Money Saving',
+            Icons.savings_outlined,
+            () => open(RouteNames.budgets),
+          ),
+          _gridItem(
+            'Documents',
+            Icons.folder_outlined,
+            () => soon('Documents'),
+          ),
           // Net Worth → existing Accounts screen
-          _gridItem('Net Worth', Icons.account_balance_outlined,
-              () => open(RouteNames.accounts)),
-          _gridItem('Investments', Icons.trending_up,
-              () => soon('Investments')),
-          _gridItem('Goals', Icons.my_location_outlined,
-              () => open(RouteNames.goals)),
+          _gridItem(
+            'Net Worth',
+            Icons.account_balance_outlined,
+            () => open(RouteNames.accounts),
+          ),
+          _gridItem(
+            'Investments',
+            Icons.trending_up,
+            () => soon('Investments'),
+          ),
+          _gridItem(
+            'Loans',
+            Icons.account_balance_outlined,
+            () => open(RouteNames.loans),
+          ),
+          _gridItem(
+            'Goals',
+            Icons.my_location_outlined,
+            () => open(RouteNames.goals),
+          ),
         ],
       ),
     );
@@ -246,14 +302,17 @@ class MoreScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 8),
-          Text(label,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                  fontFamily: 'OpenSans',
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: -0.2,
-                  color: Color(0xFF333333))),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontFamily: 'OpenSans',
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              letterSpacing: -0.2,
+              color: Color(0xFF333333),
+            ),
+          ),
         ],
       ),
     );
@@ -272,15 +331,20 @@ class _PlaceholderScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         leading: const BackButton(color: Color(0xFF2E7D32)),
-        title: Text(title,
-            style: const TextStyle(
-                fontFamily: 'OpenSans',
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF2E7D32))),
+        title: Text(
+          title,
+          style: const TextStyle(
+            fontFamily: 'OpenSans',
+            fontWeight: FontWeight.w700,
+            color: Color(0xFF2E7D32),
+          ),
+        ),
       ),
       body: const Center(
-        child: Text('Coming soon',
-            style: TextStyle(fontFamily: 'OpenSans', color: Color(0xFF999999))),
+        child: Text(
+          'Coming soon',
+          style: TextStyle(fontFamily: 'OpenSans', color: Color(0xFF999999)),
+        ),
       ),
     );
   }

@@ -22,6 +22,8 @@ import '../../features/streak/presentation/screens/reconcile_success_screen.dart
 import '../../features/streak/presentation/screens/reconcile_mismatch_screen.dart';
 import '../../features/streak/presentation/streak_screen.dart';
 import '../../features/transactions/presentation/new_transaction_screen.dart';
+import '../../features/loans/presentation/loans_screen.dart';
+import '../../features/loans/presentation/loan_list_screen.dart';
 import 'route_names.dart';
 import 'scaffold_with_bottom_nav.dart';
 
@@ -154,6 +156,21 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: RouteNames.reconcileMismatch,
         builder: (context, state) =>
             ReconcileMismatchScreen(result: state.extra as ReconcileResult),
+      ),
+      GoRoute(
+        parentNavigatorKey: appRootNavigatorKey,
+        path: RouteNames.loans,
+        builder: (context, state) => const LoansScreen(),
+      ),
+      GoRoute(
+        parentNavigatorKey: appRootNavigatorKey,
+        path: RouteNames.loanDetail,
+        builder: (context, state) => const LoanDetailScreen(),
+      ),
+      GoRoute(
+        parentNavigatorKey: appRootNavigatorKey,
+        path: RouteNames.loanReconcile,
+        builder: (context, state) => const LoanReconcileScreen(),
       ),
     ],
   );

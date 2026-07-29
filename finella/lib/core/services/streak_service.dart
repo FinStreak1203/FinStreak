@@ -178,7 +178,12 @@ class StreakService {
     if (!history.contains(todayStr)) {
       if (last != null) {
         final gap = _dayGap(last, now);
-        current = gap == 1 ? current + 1 : 1; // gap >= 2 → streak broke
+        if (gap == 1) {
+          current = current + 1;
+        } else if (gap > 1) {
+          // Missed day(s): reduce by ~20% instead of resetting (per spec)
+          current = (current * 0.8).round().clamp(1, current);
+        }
       } else {
         current = 1;
       }
