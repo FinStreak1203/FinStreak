@@ -210,27 +210,60 @@ class AppDatabase extends _$AppDatabase {
           if (from < 9) {
             await m.addColumn(transactions, transactions.currency);
           }
-          if (from < 10) {
-            await m.createTable(loans);
-            await m.createTable(emiPayments);
-            await m.createTable(budgetReviews);
-            await m.createTable(goalContributions);
-            await m.createTable(learningContents);
-            await m.createTable(learningProgresses);
-          }
+          // v10 and v11 shipped the same six tables on separate branches, so
+          // both pre-11 blocks used to create them — crashing on upgrade from
+          // <10 ("table already exists"). Create each only if it's absent so
+          // every pre-11 upgrade path lands here exactly once and safely.
           if (from < 11) {
-            await m.createTable(learningContents);
-            await m.createTable(learningProgresses);
-            await m.createTable(budgetReviews);
-            await m.createTable(loans);
-            await m.createTable(emiPayments);
-            await m.createTable(goalContributions);
+            await _ensureTableExists(m, loans);
+            await _ensureTableExists(m, emiPayments);
+            await _ensureTableExists(m, budgetReviews);
+            await _ensureTableExists(m, goalContributions);
+            await _ensureTableExists(m, learningContents);
+            await _ensureTableExists(m, learningProgresses);
           }
           if (from < 12) {
-            await m.addColumn(loans, loans.monthlyReconciledAt);
+            // Guarded: a loans table freshly created by the block above is
+            // built from the current schema and already has this column, so a
+            // blind addColumn would throw "duplicate column name".
+            await _ensureColumnExists(
+              m,
+              loans,
+              'monthly_reconciled_at',
+              loans.monthlyReconciledAt,
+            );
           }
         },
       );
+
+  /// Creates [table] only if it doesn't already exist, so a migration step can
+  /// run safely regardless of which historical builds the user upgraded from.
+  Future<void> _ensureTableExists(Migrator m, TableInfo table) async {
+    final existing = await customSelect(
+      "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?1",
+      variables: [Variable<String>(table.actualTableName)],
+    ).get();
+    if (existing.isEmpty) {
+      await m.createTable(table);
+    }
+  }
+
+  /// Adds [column] to [table] only if a column named [columnName] isn't already
+  /// present (e.g. because the table was just created from the current schema).
+  Future<void> _ensureColumnExists(
+    Migrator m,
+    TableInfo table,
+    String columnName,
+    GeneratedColumn column,
+  ) async {
+    final info =
+        await customSelect('PRAGMA table_info(${table.actualTableName})').get();
+    final hasColumn =
+        info.any((row) => row.read<String>('name') == columnName);
+    if (!hasColumn) {
+      await m.addColumn(table, column);
+    }
+  }
 }
 
 LazyDatabase _openConnection() {
