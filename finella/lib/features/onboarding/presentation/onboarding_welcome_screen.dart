@@ -13,24 +13,15 @@ class OnboardingWelcomeScreen extends StatelessWidget {
           children: [
             const Spacer(flex: 2),
 
-            // ── Finella logo ─────────────────────────────
+            // ── FinStreak logo ───────────────────────────
             Center(
-              child: Container(
-                width: 90,
-                height: 90,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF2E7D32),
-                  borderRadius: BorderRadius.circular(22),
-                ),
-                child: const Center(
-                  child: Text(
-                    'F',
-                    style: TextStyle(
-                      fontSize: 48,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
-                  ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(22),
+                child: Image.asset(
+                  'assets/images/general/finstreak_app_icon.png',
+                  width: 90,
+                  height: 90,
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
