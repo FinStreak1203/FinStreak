@@ -37,4 +37,14 @@ class FinellaColors {
   static const Color negativeLight   = Color(0xFFEF5350);
   static const Color iconBgGreen     = Color(0xFFEAF5E4);
   static const Color iconBgRed       = Color(0xFFFEF0EE);
+
+  // ── Semantic aliases used by the loans feature ──
+  static const Color textPrimary   = textDark;
+  static const Color textSecondary = textGray;
+  static const Color textTertiary  = textLight;
+  static const Color surface       = background;
+  static const Color divider       = borderDark;
+  static const Color shadow        = Color(0x14000000);
+  static const Color success       = positiveGreen;
+  static const Color error         = negativeRed;
 }

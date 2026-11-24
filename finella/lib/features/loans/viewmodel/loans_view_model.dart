@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart' show Value;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/database/app_database.dart';
 import '../../../../core/providers/database_providers.dart';
@@ -32,7 +33,7 @@ class LoansNotifier extends StateNotifier<LoansState> {
   }
 
   Future<void> addLoan(Loan loan) async {
-    await _ref.read(loanDaoProvider).insert(loan.toCompanion());
+    await _ref.read(loanDaoProvider).insert(loan.toCompanion(true));
   }
 
   Future<void> updateLoan(Loan loan) async {
@@ -43,9 +44,15 @@ class LoansNotifier extends StateNotifier<LoansState> {
     await _ref.read(loanDaoProvider).delete(id);
   }
 
-  Future<void> markMonthlyReconciled(int loanId) async {
+  /// Records this month's reconciliation against the lender's statement.
+  /// The statement balance becomes the stored outstanding amount, so any
+  /// difference from our tracked figure is applied as an adjustment.
+  Future<void> reconcile(int loanId, double statementBalance) async {
     final loan = state.loans.firstWhere((l) => l.id == loanId);
-    final updated = loan.copyWith(monthlyReconciledAt: DateTime.now());
+    final updated = loan.copyWith(
+      outstandingAmount: statementBalance,
+      monthlyReconciledAt: Value(DateTime.now()),
+    );
     await updateLoan(updated);
   }
 }

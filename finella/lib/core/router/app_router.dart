@@ -23,7 +23,8 @@ import '../../features/streak/presentation/screens/reconcile_mismatch_screen.dar
 import '../../features/streak/presentation/streak_screen.dart';
 import '../../features/transactions/presentation/new_transaction_screen.dart';
 import '../../features/loans/presentation/loans_screen.dart';
-import '../../features/loans/presentation/loan_list_screen.dart';
+import '../../features/loans/presentation/loan_detail_screen.dart';
+import '../../features/loans/presentation/loan_reconcile_screen.dart';
 import 'route_names.dart';
 import 'scaffold_with_bottom_nav.dart';
 
@@ -164,13 +165,17 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         parentNavigatorKey: appRootNavigatorKey,
-        path: RouteNames.loanDetail,
-        builder: (context, state) => const LoanDetailScreen(),
+        path: '${RouteNames.loanDetail}/:id',
+        builder: (context, state) => LoanDetailScreen(
+          loanId: int.tryParse(state.pathParameters['id'] ?? '') ?? -1,
+        ),
       ),
       GoRoute(
         parentNavigatorKey: appRootNavigatorKey,
-        path: RouteNames.loanReconcile,
-        builder: (context, state) => const LoanReconcileScreen(),
+        path: '${RouteNames.loanReconcile}/:id',
+        builder: (context, state) => LoanReconcileScreen(
+          loanId: int.tryParse(state.pathParameters['id'] ?? '') ?? -1,
+        ),
       ),
     ],
   );

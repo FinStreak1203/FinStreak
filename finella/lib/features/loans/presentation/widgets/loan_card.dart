@@ -190,9 +190,7 @@ class LoanCard extends StatelessWidget {
                   _ActionButton(
                     icon: Icons.receipt_long_rounded,
                     label: 'Statement',
-                    onTap: () {
-                      // TODO: Open EMI schedule
-                    },
+                    onTap: onTap,
                   ),
                   if (!isClosed && onReconcile != null) ...[
                     const SizedBox(width: 8),
@@ -255,7 +253,7 @@ class LoanCard extends StatelessWidget {
 class _ActionButton extends StatelessWidget {
   final IconData icon;
   final String label;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
   final bool isPrimary;
 
   const _ActionButton({

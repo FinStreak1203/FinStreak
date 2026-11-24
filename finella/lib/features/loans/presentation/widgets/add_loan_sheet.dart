@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/database/app_database.dart';
 import '../../../../core/providers/database_providers.dart';
 import '../../../../core/theme/finella_colors.dart';
-import '../../../../shared/widgets/merchant_transaction_row.dart' show formatIndianAmount;
 
 class LoanFormSheet extends ConsumerStatefulWidget {
   final Loan? loan;
@@ -78,11 +77,12 @@ class _LoanFormSheetState extends ConsumerState<LoanFormSheet> {
         startDate: _startDate,
         nextDueDate: _nextDueDate,
         isActive: true,
+        monthlyReconciledAt: widget.loan?.monthlyReconciledAt,
         createdAt: widget.loan?.createdAt ?? DateTime.now(),
       );
 
       if (widget.loan == null) {
-        await ref.read(loanDaoProvider).insert(loan.toCompanion());
+        await ref.read(loanDaoProvider).insert(loan.toCompanion(true));
       } else {
         await ref.read(loanDaoProvider).update(loan);
       }
@@ -296,7 +296,7 @@ class _LoanFormSheetState extends ConsumerState<LoanFormSheet> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: DropdownButtonFormField<String>(
-        value: value,
+        initialValue: value,
         items: items.map((t) => DropdownMenuItem(value: t, child: Text(_typeLabel(t)))).toList(),
         onChanged: onChanged,
         decoration: InputDecoration(

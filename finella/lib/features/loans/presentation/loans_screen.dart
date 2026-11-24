@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../core/database/app_database.dart';
 import '../../../../core/router/route_names.dart';
 import '../../../../core/theme/finella_colors.dart';
-import '../../../loans/viewmodel/loans_view_model.dart';
-import '../../widgets/loan_card.dart';
-import '../../widgets/add_loan_sheet.dart';
+import '../viewmodel/loans_view_model.dart';
+import 'widgets/loan_card.dart';
+import 'widgets/add_loan_sheet.dart';
 
 class LoansScreen extends ConsumerWidget {
   const LoansScreen({super.key});
@@ -58,8 +57,8 @@ class LoansScreen extends ConsumerWidget {
                         const SizedBox(height: 8),
                         ...activeLoans.map((loan) => LoanCard(
                           loan: loan,
-                          onTap: () => context.push('${RouteNames.loanDetail}/$loan.id'),
-                          onReconcile: () => _showReconcileDialog(context, ref, loan),
+                          onTap: () => context.push('${RouteNames.loanDetail}/${loan.id}'),
+                          onReconcile: () => context.push('${RouteNames.loanReconcile}/${loan.id}'),
                         )),
                         const SizedBox(height: 20),
                       ],
@@ -68,7 +67,7 @@ class LoansScreen extends ConsumerWidget {
                         const SizedBox(height: 8),
                         ...closedLoans.map((loan) => LoanCard(
                           loan: loan,
-                          onTap: () => context.push('${RouteNames.loanDetail}/$loan.id'),
+                          onTap: () => context.push('${RouteNames.loanDetail}/${loan.id}'),
                           onReconcile: null,
                           isClosed: true,
                         )),
@@ -84,71 +83,10 @@ class LoansScreen extends ConsumerWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => const AddLoanSheet(),
+      builder: (_) => const LoanFormSheet(),
     );
   }
 
-  void _showReconcileDialog(BuildContext context, WidgetRef ref, Loan loan) {
-    final controller = TextEditingController(text: loan.outstandingAmount.toStringAsFixed(2));
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Monthly Reconciliation'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Loan: ${loan.name}'),
-            Text('Current Outstanding: ${_formatAmount(loan.outstandingAmount)}'),
-            const SizedBox(height: 12),
-            const Text('Enter Statement Balance:'),
-            const SizedBox(height: 8),
-            TextField(
-              controller: controller,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration: const InputDecoration(
-                labelText: 'Balance',
-                prefixText: '₹ ',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Compare with your lender statement. Difference will create an adjustment.',
-              style: TextStyle(fontSize: 12, color: FinellaColors.textSecondary),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              final amount = double.tryParse(controller.text);
-              if (amount == null) return;
-              Navigator.pop(ctx);
-              // TODO: Handle mismatch adjustment
-              await ref.read(loansProvider.notifier).markMonthlyReconciled(loan.id);
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Loan reconciled for this month')),
-                );
-              }
-            },
-            child: const Text('Reconcile'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _formatAmount(double amount) {
-    if (amount >= 100000) return '₹${(amount / 100000).toStringAsFixed(1)}L';
-    if (amount >= 1000) return '₹${(amount / 1000).toStringAsFixed(1)}K';
-    return '₹${amount.toStringAsFixed(2)}';
-  }
 }
 
 class _SectionHeader extends StatelessWidget {

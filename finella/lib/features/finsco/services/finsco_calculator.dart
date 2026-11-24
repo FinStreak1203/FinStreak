@@ -600,7 +600,6 @@ static FinScoreComponent _financialGoals(
 
     final completed = learningProgress.where((p) => p.completed).toList();
     final totalCompleted = completed.length;
-    final totalXp = completed.fold<double>(0, (s, p) => s + ((p.score as num?)?.toDouble() ?? 10.0));
     final avgScore = completed.isEmpty
         ? 0.0
         : completed

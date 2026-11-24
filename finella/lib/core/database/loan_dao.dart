@@ -66,6 +66,9 @@ class LoanDao {
       startDate: tsToDate(d['startDate']),
       nextDueDate: tsToDate(d['nextDueDate']),
       isActive: d['isActive'] as bool? ?? true,
+      monthlyReconciledAt: d['monthlyReconciledAt'] != null
+          ? tsToDate(d['monthlyReconciledAt'])
+          : null,
       createdAt: tsToDate(d['createdAt']),
     );
   }
@@ -83,6 +86,7 @@ class LoanDao {
         'startDate': l.startDate,
         'nextDueDate': l.nextDueDate,
         'isActive': l.isActive,
+        'monthlyReconciledAt': l.monthlyReconciledAt,
         'createdAt': l.createdAt,
       };
 
@@ -99,6 +103,8 @@ class LoanDao {
         'startDate': e.startDate.value,
         'nextDueDate': e.nextDueDate.value,
         'isActive': e.isActive.present ? e.isActive.value : true,
+        'monthlyReconciledAt':
+            e.monthlyReconciledAt.present ? e.monthlyReconciledAt.value : null,
         'createdAt': e.createdAt.present ? e.createdAt.value : DateTime.now(),
       };
 }
