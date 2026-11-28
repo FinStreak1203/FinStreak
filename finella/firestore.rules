@@ -1,0 +1,146 @@
+rules_version = '2';
+
+// FinStreak — Firestore security rules.
+//
+// Every user's data lives under users/{uid}/…, and only that signed-in user
+// may read or write it. The backend uses the Admin SDK, which bypasses these
+// rules.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    match /users/{uid} {
+      allow read, delete: if isOwner(uid);
+
+      // users/{uid}.gmail (refresh token, sync status) is written only by the
+      // backend — the app may read it but never create or change it.
+      allow create: if isOwner(uid) && !('gmail' in request.resource.data);
+      allow update: if isOwner(uid) &&
+          !request.resource.data.diff(resource.data).affectedKeys()
+              .hasAny(['gmail']);
+
+      // Premium entitlement and payment records. The app may read its own
+      // entitlement, but only the server (Admin SDK) can write it. This stops
+      // a user from granting premium to themselves.
+      match /billing/{doc} {
+        allow read: if isOwner(uid);
+        allow write: if false;
+      }
+
+      // All other per-user collections: transactions, accounts, budgets, goals,
+      // categories, tags, recurring, split*, investment*, savings*, streak,
+      // devices, unparsed_messages, transaction_dedup, gmail_processed …
+      // Excludes 'billing', which is server-written only.
+      match /{collection}/{document=**} {
+        allow read, write: if isOwner(uid) && collection != 'billing';
+      }
+    }
+
+    // ── Shared trips (sharedGroups/{groupId}/…) ──────────────────────────
+    // Readable only by signed-in members (memberUids). Nobody adds
+    // themselves from the app — joining goes through the joinGroup function,
+    // which checks the invite code. Phones of placeholder members live in
+    // memberPhones, readable only by whoever typed them in (names only).
+    function groupDoc(g) {
+      return get(/databases/$(database)/documents/sharedGroups/$(g));
+    }
+    function groupDocAfter(g) {
+      return getAfter(/databases/$(database)/documents/sharedGroups/$(g));
+    }
+    function isMember(g) {
+      return request.auth != null &&
+          request.auth.uid in groupDoc(g).data.memberUids;
+    }
+    function isMemberAfter(g) {
+      return request.auth != null &&
+          request.auth.uid in groupDocAfter(g).data.memberUids;
+    }
+    function isTripOwner(g) {
+      return request.auth != null &&
+          groupDoc(g).data.ownerUid == request.auth.uid;
+    }
+
+    match /sharedGroups/{g} {
+      allow read: if request.auth != null &&
+          request.auth.uid in resource.data.memberUids;
+      allow create: if request.auth != null &&
+          request.resource.data.ownerUid == request.auth.uid &&
+          request.resource.data.memberUids == [request.auth.uid];
+      // Owner renames etc.; membership and ownership change only server-side.
+      allow update: if request.auth != null &&
+          resource.data.ownerUid == request.auth.uid &&
+          !request.resource.data.diff(resource.data).affectedKeys()
+              .hasAny(['memberUids', 'ownerUid']);
+      allow delete: if false; // deleteSharedGroup function (removes all)
+
+      match /members/{m} {
+        allow read: if isMember(g);
+        // Placeholders (no account yet), or the owner's own member doc at
+        // creation. Accounts are linked only by the join/claim functions.
+        allow create: if isMemberAfter(g) &&
+            request.resource.data.addedBy == request.auth.uid &&
+            ((request.resource.data.uid == null &&
+              request.resource.data.role == 'member') ||
+             (request.resource.data.uid == request.auth.uid &&
+              request.resource.data.role == 'owner' &&
+              groupDocAfter(g).data.ownerUid == request.auth.uid));
+        allow update: if isMember(g) &&
+            (resource.data.addedBy == request.auth.uid || isTripOwner(g)) &&
+            request.resource.data.diff(resource.data).affectedKeys()
+                .hasOnly(['name']);
+        allow delete: if isTripOwner(g) && resource.data.uid == null;
+      }
+
+      match /memberPhones/{m} {
+        allow read, update, delete: if isMember(g) &&
+            resource.data.addedBy == request.auth.uid;
+        allow create: if isMemberAfter(g) &&
+            request.resource.data.addedBy == request.auth.uid;
+      }
+
+      match /expenses/{e} {
+        allow read: if isMember(g);
+        allow create: if isMemberAfter(g) &&
+            request.resource.data.createdBy == request.auth.uid;
+        // Edit / soft-delete: its creator or the trip owner.
+        allow update: if isMember(g) &&
+            (resource.data.createdBy == request.auth.uid || isTripOwner(g)) &&
+            request.resource.data.createdBy == resource.data.createdBy;
+        allow delete: if false; // soft delete (deleted: true) keeps Undo
+      }
+
+      match /settlements/{s} {
+        allow read: if isMember(g);
+        allow create: if isMemberAfter(g) &&
+            request.resource.data.createdBy == request.auth.uid;
+        allow update: if isMember(g) &&
+            (resource.data.createdBy == request.auth.uid || isTripOwner(g)) &&
+            request.resource.data.createdBy == resource.data.createdBy;
+        allow delete: if false;
+      }
+    }
+
+    // Backend-only: invite codes.
+    match /invites/{code} {
+      allow read, write: if false;
+    }
+
+    // Backend-only: Gmail address → uid lookup.
+    match /gmailIndex/{address} {
+      allow read, write: if false;
+    }
+
+    // Backend-only: payment records (idempotency for Razorpay payments).
+    match /payments/{paymentId} {
+      allow read, write: if false;
+    }
+
+    // Anything not listed above is closed.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
