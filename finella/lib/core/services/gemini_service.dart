@@ -1,64 +1,66 @@
+import 'dart:convert';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:http/http.dart' as http;
 
-/// Thin wrapper around Google's Gemini API for Finella's AI features:
-/// transaction categorisation, merchant-name cleanup, spending insights and
-/// the chat coach. Every call is defensive — on any failure (missing key,
-/// network, rate-limit, bad response) it returns a sensible non-AI fallback so
-/// the app keeps working without Gemini.
+/// Client for FinStreak's AI features: transaction categorisation, merchant-name
+/// cleanup, spending insights and the chat coach. Prompts go to our own API
+/// (`/api/ai/generate`), which holds the Gemini key on the server, so no key is
+/// shipped in the app. Every call is defensive: on any failure (not signed in,
+/// no network, rate-limit, bad response) it returns a non-AI fallback so the
+/// app keeps working without Gemini.
 class GeminiService {
-  // Tried in order. Free-tier flash models are frequently overloaded (503) or
-  // out of quota (429), so we fall through to the next on any failure. The
-  // pinned gemini-2.0-flash alias has zero free-tier quota on this project, so
-  // it's intentionally left out. Edit/reorder this list to change models.
-  static const List<String> _modelCandidates = [
-    'gemini-2.5-flash',
-    'gemini-flash-latest',
-    'gemini-2.5-flash-lite',
-    'gemini-flash-lite-latest',
-  ];
-
-  final String _apiKey;
-  final Map<String, GenerativeModel> _modelCache = {};
+  // Base URL of the FinStreak web API. Set PAYMENTS_API_BASE in .env.
+  final String _baseUrl;
 
   GeminiService()
-      : _apiKey = dotenv.isInitialized
-            ? (dotenv.maybeGet('GEMINI_API_KEY') ?? '')
+      : _baseUrl = dotenv.isInitialized
+            ? (dotenv.maybeGet('PAYMENTS_API_BASE') ?? '')
             : '' {
     if (!isEnabled) {
-      debugPrint('GeminiService: no API key set — AI features will fall back.');
+      debugPrint('GeminiService: no API base URL set — AI features will fall back.');
     }
   }
 
-  /// True when a usable API key is configured.
-  bool get isEnabled =>
-      _apiKey.isNotEmpty && _apiKey != 'your_actual_api_key_here';
+  /// True when the AI API base URL is configured.
+  bool get isEnabled => _baseUrl.isNotEmpty;
 
-  GenerativeModel _modelFor(String name) => _modelCache.putIfAbsent(
-        name,
-        () => GenerativeModel(model: name, apiKey: _apiKey),
-      );
-
-  /// One-line, plain-text generation shared by every method below. Walks the
-  /// candidate models and returns the first success; null only if AI is off or
-  /// every model fails (overloaded / quota / error), so callers can fall back.
+  /// One-line, plain-text generation shared by every method below. Sends the
+  /// prompt to the API with the user's Firebase ID token. Returns null if AI is
+  /// off, the user is signed out, or the API fails, so callers can fall back.
   Future<String?> _generate(String prompt) async {
     if (!isEnabled) return null;
-    final content = [Content.text(prompt)];
-    for (final name in _modelCandidates) {
-      try {
-        final response = await _modelFor(name).generateContent(content);
-        final text = response.text?.trim();
-        if (text != null && text.isNotEmpty) return text;
-      } catch (e) {
-        // 503 overloaded / 429 quota / transient — try the next model.
-        debugPrint('Gemini ($name) failed, trying next: $e');
-      }
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      debugPrint('Gemini: not signed in, using fallback.');
+      return null;
     }
-    debugPrint('Gemini: all models failed.');
-    return null;
+    try {
+      final token = await user.getIdToken();
+      final res = await http
+          .post(
+            Uri.parse('$_baseUrl/api/ai/generate'),
+            headers: {
+              'content-type': 'application/json',
+              'authorization': 'Bearer $token',
+            },
+            body: jsonEncode({'prompt': prompt}),
+          )
+          .timeout(const Duration(seconds: 30));
+      if (res.statusCode != 200) {
+        debugPrint('Gemini API ${res.statusCode}: ${res.body}');
+        return null;
+      }
+      final text = (jsonDecode(res.body) as Map<String, dynamic>)['text'];
+      final trimmed = text is String ? text.trim() : '';
+      return trimmed.isEmpty ? null : trimmed;
+    } catch (e) {
+      debugPrint('Gemini API request failed: $e');
+      return null;
+    }
   }
 
   static const List<String> _validCategories = [
@@ -136,7 +138,7 @@ ZOMATOONLINE → Zomato
         .map((e) => '${e.key}: ₹${e.value.toStringAsFixed(0)}')
         .join('\n');
     final prompt = '''
-You are Finella, an AI financial coach for Indian users.
+You are FinStreak, an AI financial coach for Indian users.
 
 User's spending for $period:
 Total Income : ₹${totalIncome.toStringAsFixed(0)}
@@ -153,13 +155,13 @@ Suggest one improvement.
     return await _generate(prompt) ?? 'Keep tracking your expenses!';
   }
 
-  // ── 4 — Finella AI chat ────────────────────────────────────────────────
+  // ── 4 — FinStreak AI chat ────────────────────────────────────────────────
   Future<String> chat({
     required String userMessage,
     required String transactionContext,
   }) async {
     final prompt = '''
-You are Finella, a friendly AI financial coach for Indian users.
+You are FinStreak, a friendly AI financial coach for Indian users.
 
 User's financial context:
 $transactionContext

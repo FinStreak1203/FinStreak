@@ -451,7 +451,7 @@ class SettingsScreen extends ConsumerWidget {
                 icon: Icons.info_outline_rounded,
                 iconBg: const Color(0xFFEAF5E4),
                 iconColor: const Color(0xFF2E7D32),
-                label: 'Finella',
+                label: 'FinStreak',
                 sublabel: 'Version 1.0',
                 trailing: const SizedBox.shrink(),
               ),
@@ -461,7 +461,6 @@ class SettingsScreen extends ConsumerWidget {
 
             // ── SECTION 7: DEVELOPER (test toggle) ───────
             const _SectionLabel('DEVELOPER'),
-            _DevPlanToggle(),
 
             const SizedBox(height: 32),
           ],
@@ -699,139 +698,4 @@ class _Divider extends StatelessWidget {
         indent: 62,
         endIndent: 0,
       );
-}
-
-// ── Developer plan toggle ─────────────────────────────────────
-class _DevPlanToggle extends ConsumerWidget {
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isPremium = ref.watch(isPremiumProvider);
-    final notifier  = ref.read(subscriptionProvider.notifier);
-
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFE5E7EB), width: 1.2),
-      ),
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Current status badge
-          Row(
-            children: [
-              const Text(
-                'Current plan:',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xFF6B7280),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 10, vertical: 3),
-                decoration: BoxDecoration(
-                  color: isPremium
-                      ? const Color(0xFF2E7D32)
-                      : const Color(0xFF6B7280),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  isPremium ? '✦ Premium' : 'Free',
-                  style: const TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-
-          // Toggle buttons
-          Row(
-            children: [
-              Expanded(
-                child: _DevButton(
-                  label: 'Free',
-                  icon: Icons.person_outline_rounded,
-                  active: !isPremium,
-                  activeColor: const Color(0xFF6B7280),
-                  onTap: () => notifier.downgradeToFree(),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _DevButton(
-                  label: 'Premium',
-                  icon: Icons.workspace_premium_rounded,
-                  active: isPremium,
-                  activeColor: const Color(0xFF2E7D32),
-                  onTap: () => notifier.upgradeToPremium(),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _DevButton extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final bool active;
-  final Color activeColor;
-  final VoidCallback onTap;
-
-  const _DevButton({
-    required this.label,
-    required this.icon,
-    required this.active,
-    required this.activeColor,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          color: active ? activeColor : const Color(0xFFF7FAF4),
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: active ? activeColor : const Color(0xFFE5E7EB),
-            width: 1.5,
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              size: 16,
-              color: active ? Colors.white : const Color(0xFF9CA3AF),
-            ),
-            const SizedBox(width: 6),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                color: active ? Colors.white : const Color(0xFF9CA3AF),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

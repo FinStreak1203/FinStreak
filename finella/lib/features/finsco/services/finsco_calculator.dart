@@ -159,7 +159,7 @@ static FinScoreResult calculate({
         earned: 0,
         summary: 'Savings discipline activates after income is logged.',
         recommendation:
-            'Log income first so Finella can calculate savings rate.',
+            'Log income first so FinStreak can calculate savings rate.',
       );
     }
 

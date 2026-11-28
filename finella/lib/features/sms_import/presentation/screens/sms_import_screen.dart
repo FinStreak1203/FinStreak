@@ -643,7 +643,7 @@ class _PermissionView extends StatelessWidget {
                   color: Color(0xFF111827))),
           const SizedBox(height: 10),
           const Text(
-            'Finella reads only bank transaction SMS messages. '
+            'FinStreak reads only bank transaction SMS messages. '
             'Personal messages are never accessed.',
             textAlign: TextAlign.center,
             style: TextStyle(

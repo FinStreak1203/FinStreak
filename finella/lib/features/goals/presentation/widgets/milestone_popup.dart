@@ -138,9 +138,9 @@ void _shareAchievement(
   double savedAmount,
 ) {
   final text = 'I just reached the ${milestone.emoji} ${milestone.name} '
-      'milestone for my $goalName goal on Finella! '
+      'milestone for my $goalName goal on FinStreak! '
       'Saved ₹${_fmt(savedAmount)} so far. '
-      '#Finella #SavingsGoal #FinancialFreedom';
+      '#FinStreak #SavingsGoal #FinancialFreedom';
   Share.share(text);
 }
 

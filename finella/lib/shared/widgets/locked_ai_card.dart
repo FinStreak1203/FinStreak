@@ -30,7 +30,7 @@ class LockedAiCard extends StatelessWidget {
               const Icon(Icons.lock_outline, size: 14, color: FinellaColors.textGray),
               const SizedBox(width: 6),
               const Text(
-                'Finella AI Insight',
+                'FinStreak AI Insight',
                 style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF374151)),
               ),
               const Spacer(),
@@ -97,7 +97,7 @@ class LockedAiCard extends StatelessWidget {
                   Icon(Icons.lock_open_rounded, size: 18, color: Colors.white),
                   SizedBox(width: 8),
                   Text(
-                    'Unlock Finella Premium',
+                    'Unlock FinStreak Premium',
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,

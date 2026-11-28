@@ -97,7 +97,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
               const SizedBox(height: 6),
               const Text(
-                'Sign in to continue to Finella',
+                'Sign in to continue to FinStreak',
                 style: TextStyle(fontSize: 15, color: Color(0xFF9CA3AF)),
               ),
               const SizedBox(height: 28),

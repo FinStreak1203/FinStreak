@@ -121,14 +121,14 @@ class FinellaApp extends ConsumerWidget {
       );
 
   MaterialApp _authApp() => MaterialApp.router(
-        title: 'Finella',
+        title: 'FinStreak',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.theme,
         routerConfig: _authRouter,
       );
 
   MaterialApp _onboardingApp() => MaterialApp.router(
-        title: 'Finella',
+        title: 'FinStreak',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.theme,
         routerConfig: _onboardingRouter,
@@ -159,7 +159,7 @@ class FinellaApp extends ConsumerWidget {
             // for the signed-in, onboarded session.
             return _RealtimeSmsGate(
               child: MaterialApp.router(
-                title: 'Finella',
+                title: 'FinStreak',
                 debugShowCheckedModeBanner: false,
                 theme: AppTheme.theme,
                 darkTheme: AppTheme.theme, // force the white & green light theme

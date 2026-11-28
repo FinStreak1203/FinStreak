@@ -29,7 +29,7 @@ class OnboardingWelcomeScreen extends StatelessWidget {
 
             // ── App name ─────────────────────────────────
             const Text(
-              'Finella',
+              'FinStreak',
               style: TextStyle(
                 fontSize: 36,
                 fontWeight: FontWeight.w700,

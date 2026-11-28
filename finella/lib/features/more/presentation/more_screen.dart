@@ -82,7 +82,7 @@ class MoreScreen extends ConsumerWidget {
     final score = ref.watch(finScoreValueProvider);
     final name = (profile?.fullName.trim().isNotEmpty ?? false)
         ? profile!.fullName
-        : 'Finella User';
+        : 'FinStreak User';
     final initial = name.isNotEmpty ? name[0].toUpperCase() : 'F';
     final memberSince =
         FirebaseAuth.instance.currentUser?.metadata.creationTime?.year ??

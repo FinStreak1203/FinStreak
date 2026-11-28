@@ -51,7 +51,7 @@ class _FreeLockScreen extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: const [
             Text(
-              'Finella AI',
+              'FinStreak AI',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
@@ -120,7 +120,7 @@ class _FreeLockScreen extends ConsumerWidget {
                   elevation: 0,
                 ),
                 child: const Text(
-                  'Unlock Finella AI — ₹199/month',
+                  'Unlock FinStreak AI — ₹199/month',
                   style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
                 ),
               ),
@@ -378,7 +378,7 @@ class _PremiumWelcomeScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: const [
             Text(
-              'Finella AI',
+              'FinStreak AI',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
@@ -453,7 +453,7 @@ class _PremiumWelcomeScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Hi! I\'m Finella AI 👋',
+                          'Hi! I\'m FinStreak AI 👋',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,

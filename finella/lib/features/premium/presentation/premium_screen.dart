@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/providers/subscription_provider.dart';
+import '../../../core/services/payment_service.dart';
 
 class PremiumScreen extends ConsumerStatefulWidget {
   const PremiumScreen({super.key});
@@ -24,20 +24,28 @@ class _PremiumScreenState extends ConsumerState<PremiumScreen> {
     'Priority Support',
   ];
 
-  Future<void> _startTrial() async {
+  Future<void> _purchase() async {
     setState(() => _isLoading = true);
-    await Future.delayed(const Duration(seconds: 1));
-    ref.read(subscriptionProvider.notifier).upgradeToPremium();
+    final result = await PaymentService().purchase(plan: _selectedPlan);
+    if (!mounted) return;
     setState(() => _isLoading = false);
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Welcome to Finella Premium!'),
-          backgroundColor: Color(0xFF2E7D32),
-          duration: Duration(seconds: 3),
-        ),
-      );
-      Navigator.pop(context);
+
+    switch (result.outcome) {
+      case PurchaseOutcome.success:
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Welcome to FinStreak Premium!'),
+            backgroundColor: Color(0xFF2E7D32),
+            duration: Duration(seconds: 3),
+          ),
+        );
+        Navigator.pop(context);
+      case PurchaseOutcome.cancelled:
+        break;
+      case PurchaseOutcome.failed:
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(result.message ?? 'Payment failed.')),
+        );
     }
   }
 
@@ -71,7 +79,7 @@ class _PremiumScreenState extends ConsumerState<PremiumScreen> {
                       color: Color(0xFFD4AF37), size: 28),
                   SizedBox(width: 8),
                   Text(
-                    'Finella',
+                    'FinStreak',
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w700,
@@ -98,7 +106,7 @@ class _PremiumScreenState extends ConsumerState<PremiumScreen> {
 
             // ── 3. SUBTITLE ───────────────────────────────
             const Text(
-              'Finella Premium',
+              'FinStreak Premium',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w700,
@@ -256,7 +264,7 @@ class _PremiumScreenState extends ConsumerState<PremiumScreen> {
                                       text: const TextSpan(
                                         children: [
                                           TextSpan(
-                                            text: '₹1,999',
+                                            text: '₹1,499',
                                             style: TextStyle(
                                               fontSize: 22,
                                               fontWeight:
@@ -287,7 +295,7 @@ class _PremiumScreenState extends ConsumerState<PremiumScreen> {
                                           BorderRadius.circular(8),
                                     ),
                                     child: const Text(
-                                      'Save 16%',
+                                      'Save 37%',
                                       style: TextStyle(
                                         fontSize: 10,
                                         fontWeight: FontWeight.w700,
@@ -339,7 +347,7 @@ class _PremiumScreenState extends ConsumerState<PremiumScreen> {
               width: double.infinity,
               height: 56,
               child: ElevatedButton(
-                onPressed: _isLoading ? null : _startTrial,
+                onPressed: _isLoading ? null : _purchase,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF2E7D32),
                   shape: RoundedRectangleBorder(
@@ -351,7 +359,7 @@ class _PremiumScreenState extends ConsumerState<PremiumScreen> {
                     ? const CircularProgressIndicator(
                         color: Colors.white, strokeWidth: 2)
                     : const Text(
-                        'Start 7-Day Free Trial',
+                        'Continue to payment',
                         style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w700,
@@ -364,54 +372,12 @@ class _PremiumScreenState extends ConsumerState<PremiumScreen> {
 
             // ── 7. TRUST ROW ──────────────────────────────
             const Text(
-              'Cancel anytime  ·  50,000+ users  ·  Bank-grade security',
+              'Pay once, no auto-renewal  ·  Payments by Razorpay',
               style: TextStyle(fontSize: 12, color: Color(0xFF9CA3AF)),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
 
-            // ── 8. 250-DAY OFFER CARD ─────────────────────
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 16, vertical: 14),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(
-                    color: const Color(0xFFE5E7EB), width: 1),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Center(
-                child: RichText(
-                  textAlign: TextAlign.center,
-                  text: const TextSpan(
-                    children: [
-                      TextSpan(
-                        text:
-                            'Open app 250 days and get next year ',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF2E7D32),
-                        ),
-                      ),
-                      TextSpan(
-                        text: 'FREE! ',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF2E7D32),
-                        ),
-                      ),
-                      TextSpan(
-                        text: '🔥',
-                        style: TextStyle(fontSize: 14),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
             const SizedBox(height: 32),
           ],
         ),

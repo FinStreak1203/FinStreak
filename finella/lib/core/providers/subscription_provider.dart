@@ -1,53 +1,50 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'database_providers.dart';
 
 enum SubscriptionTier { free, premium }
 
 class SubscriptionState {
   final SubscriptionTier tier;
+  final DateTime? expiresAt;
 
-  const SubscriptionState({this.tier = SubscriptionTier.free});
+  const SubscriptionState({this.tier = SubscriptionTier.free, this.expiresAt});
 
   bool get isPremium => tier == SubscriptionTier.premium;
-
-  SubscriptionState copyWith({SubscriptionTier? tier}) =>
-      SubscriptionState(tier: tier ?? this.tier);
 }
 
+/// SharedPreferences is still provided by main.dart. Premium no longer reads
+/// from it: the entitlement is written by the server after a verified payment.
 final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
   throw UnimplementedError('Override sharedPreferencesProvider in main');
 });
 
-class SubscriptionNotifier extends StateNotifier<SubscriptionState> {
-  final SharedPreferences _prefs;
+/// Premium status from users/{uid}/billing/entitlement. Only the server can
+/// write this document (see firestore.rules), so it cannot be granted locally.
+final subscriptionProvider = StreamProvider<SubscriptionState>((ref) {
+  final uid = ref.watch(currentUidProvider);
+  if (uid == null) return Stream.value(const SubscriptionState());
 
-  SubscriptionNotifier(this._prefs) : super(const SubscriptionState()) {
-    _loadFromPrefs();
-  }
-
-  void _loadFromPrefs() {
-    final tierStr = _prefs.getString('subscription_tier') ?? 'free';
-    final tier = tierStr == 'premium' ? SubscriptionTier.premium : SubscriptionTier.free;
-    state = SubscriptionState(tier: tier);
-  }
-
-  Future<void> upgradeToPremium() async {
-    await _prefs.setString('subscription_tier', 'premium');
-    state = state.copyWith(tier: SubscriptionTier.premium);
-  }
-
-  Future<void> downgradeToFree() async {
-    await _prefs.setString('subscription_tier', 'free');
-    state = state.copyWith(tier: SubscriptionTier.free);
-  }
-}
-
-final subscriptionProvider =
-    StateNotifierProvider<SubscriptionNotifier, SubscriptionState>((ref) {
-  final prefs = ref.watch(sharedPreferencesProvider);
-  return SubscriptionNotifier(prefs);
+  final db = ref.watch(firestoreProvider);
+  return db
+      .collection('users')
+      .doc(uid)
+      .collection('billing')
+      .doc('entitlement')
+      .snapshots()
+      .map((snap) {
+    final expiresAt = (snap.data()?['expiresAt'] as Timestamp?)?.toDate();
+    final active = expiresAt != null && expiresAt.isAfter(DateTime.now());
+    return SubscriptionState(
+      tier: active ? SubscriptionTier.premium : SubscriptionTier.free,
+      expiresAt: expiresAt,
+    );
+  });
 });
 
+/// True while the user has an active premium pass. Free until the first
+/// entitlement loads, so premium never shows before the server confirms it.
 final isPremiumProvider = Provider<bool>((ref) {
-  return ref.watch(subscriptionProvider).isPremium;
+  return ref.watch(subscriptionProvider).valueOrNull?.isPremium ?? false;
 });

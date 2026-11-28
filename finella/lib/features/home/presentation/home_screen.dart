@@ -292,7 +292,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   // ════════════════ NEW WHITE & GREEN HOME SECTIONS ════════════════
 
   Widget _buildAppBar(String name, int billsDue) {
-    final display = (name.isEmpty || name == 'there') ? 'Finella User' : name;
+    final display = (name.isEmpty || name == 'there') ? 'FinStreak User' : name;
     final initial = display[0].toUpperCase();
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 10),

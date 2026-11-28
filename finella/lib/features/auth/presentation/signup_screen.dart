@@ -138,7 +138,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               ),
               const SizedBox(height: 6),
               const Text(
-                'Start tracking your money with Finella',
+                'Start tracking your money with FinStreak',
                 style: TextStyle(fontSize: 15, color: Color(0xFF9CA3AF)),
               ),
               const SizedBox(height: 28),

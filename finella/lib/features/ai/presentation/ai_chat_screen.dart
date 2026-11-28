@@ -229,7 +229,7 @@ class _AiChatScreenState extends ConsumerState<AiChatScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Finella AI',
+                  'FinStreak AI',
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,

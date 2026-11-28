@@ -53,7 +53,7 @@ class _OnboardingCreatePinScreenState
             ),
             const SizedBox(height: 8),
             const Text(
-              'You\'ll use this PIN to unlock Finella.',
+              'You\'ll use this PIN to unlock FinStreak.',
               style: TextStyle(fontSize: 14, color: Color(0xFF9CA3AF)),
               textAlign: TextAlign.center,
             ),

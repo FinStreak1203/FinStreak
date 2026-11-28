@@ -625,7 +625,7 @@ class _ConnectView extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           const Text(
-            'Finella will read only bank transaction emails. '
+            'FinStreak will read only bank transaction emails. '
             'Personal emails are never accessed.',
             textAlign: TextAlign.center,
             style: TextStyle(
