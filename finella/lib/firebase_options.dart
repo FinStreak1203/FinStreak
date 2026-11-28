@@ -78,7 +78,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCW63gFyQ-kCg44A4ymDajEzr7pfDMuQD4',
-    appId: '1:503765405760:android:d0572487c297a18b34cfa5',
+    appId: '1:503765405760:android:5e3e4a97fa8445b734cfa5',
     messagingSenderId: '503765405760',
     projectId: 'finella-dev',
     storageBucket: 'finella-dev.firebasestorage.app',

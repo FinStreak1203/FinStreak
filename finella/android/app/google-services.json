@@ -22,47 +22,11 @@
           }
         },
         {
-          "client_id": "503765405760-sckgpslkpeh6egqso83q5u7u2i77l4he.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCW63gFyQ-kCg44A4ymDajEzr7pfDMuQD4"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "503765405760-sckgpslkpeh6egqso83q5u7u2i77l4he.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "503765405760-elgmm4s6s41a3murrr4o709posn1spj0.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.finella"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:503765405760:android:3f069c140166ae4934cfa5",
-        "android_client_info": {
-          "package_name": "com.example.finellaDev"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "503765405760-s26l47lg4gpcr5jr0mu72kavg7i4l7b9.apps.googleusercontent.com",
+          "client_id": "503765405760-edmnsp25bj89bbgn7ioelefr65os6is0.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.finellaDev",
-            "certificate_hash": "a479f43a4c217003431c53ef61caee4c91e82826"
+            "package_name": "com.example.finella",
+            "certificate_hash": "ebf54834344c3ebf89d9dd1e405d1fe7054afd72"
           }
         },
         {
@@ -83,10 +47,54 @@
               "client_type": 3
             },
             {
-              "client_id": "503765405760-elgmm4s6s41a3murrr4o709posn1spj0.apps.googleusercontent.com",
+              "client_id": "503765405760-0jiav5mn53ntjt62ghj7epa8cm67qjgo.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.finella"
+                "bundle_id": "com.IMAYL.finella"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:503765405760:android:5e3e4a97fa8445b734cfa5",
+        "android_client_info": {
+          "package_name": "com.finstreak.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "503765405760-cvsprqhf4cgrrciedg3qce65a2i7crd2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.finstreak.app",
+            "certificate_hash": "ebf54834344c3ebf89d9dd1e405d1fe7054afd72"
+          }
+        },
+        {
+          "client_id": "503765405760-sckgpslkpeh6egqso83q5u7u2i77l4he.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCW63gFyQ-kCg44A4ymDajEzr7pfDMuQD4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "503765405760-sckgpslkpeh6egqso83q5u7u2i77l4he.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "503765405760-0jiav5mn53ntjt62ghj7epa8cm67qjgo.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.IMAYL.finella"
               }
             }
           ]

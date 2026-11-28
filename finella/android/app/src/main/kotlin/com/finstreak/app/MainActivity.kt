@@ -1,4 +1,4 @@
-package com.example.finella
+package com.finstreak.app
 
 import io.flutter.embedding.android.FlutterActivity
 
